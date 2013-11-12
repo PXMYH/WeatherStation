@@ -14,13 +14,23 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         weatherstationgui.cpp\
-        utilities.cpp
+        utilities.cpp\
+        computation.cpp\
+        calculation.cpp
 
 HEADERS  += weatherstationgui.h\
-            utilities.h
+            utilities.h\
+            types.h\
+            computation.h\
+            calculation.h
 
 FORMS    += weatherstationgui.ui
 
 CONFIG   += console
 
-RESOURCES += BCnorthWeatherData.csv
+#RESOURCES += BCnorthWeatherData.csv
+
+RESOURCES += \
+    BCnorthWeatherData.qrc
+
+

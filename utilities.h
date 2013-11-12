@@ -1,23 +1,34 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
+#include <vector>
+#include "types.h"
+
 class weather {
 public:
+   
+	weather();																									 // constructor
+    ~weather();																									// destructor
 
-    // constructor
-    weather(int);
+	std::string promptStationID ();																	// prompt user for inputting station ID to check weather report
+	bool isStationIDValid(std::string);																// check if station ID is valid (in the station ID list database)
+	bool loadFile();																							// load weather data resource file
+	bool setStationList();																					// compile station ID list database
+	bool isDataComplete(weather_data_t&);													// check if data entries are complete, i.e. 370 columns each row
+	weather_data_t getRecord();																		// access private member weather data record
+	
+	// add sort and filter unique station value method here later -- M.H
 
-    // destructor
-    ~weather();
-
-	void station_ID_prompt ();
-	bool weather_station_ID_check(int);
-	bool load_file();
-
+	friend class computation;																			// define friend class 
 
 private:
-    int test;
-
+	int test;
+	std::string station_ID;
+	int year;
+	std::string station_name;
+	std::string weather_condition;
+	weather_data_t record;
+	std::vector<std::string> station_list;
 };
 
 #endif
