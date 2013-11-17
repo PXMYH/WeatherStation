@@ -26,19 +26,26 @@ public:
 	double maxTemp(weather_vector_double_t&);													// find the highest temperature
 	double minTemp(weather_vector_double_t&);													// find the lowest temperature
 	
+    void setAvgHighTempVec(weather_vector_double_t&);
+    weather_vector_double_t getAvgHighTempVec();
+
 
 	// get private member record						
 	bool setHighTempDate(int);																					// set private member variable highest temperature date
 	bool setLowTempDate(int);																					// set private member variable lowest temperature date
 
 	// define friend class
-	friend class weather;																							
+    friend class weather;
+    friend class weatherstationgui;
 
 private:
 	weather_data_t record;
 	weather_data_t stationRecord;
 	int highTempDate;
 	int lowTempDate;
+
+    weather_vector_double_t avgHighTempVec;
+
 
 	bool cleanStationDataRecord(std::string);
 };

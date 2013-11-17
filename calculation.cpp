@@ -10,16 +10,18 @@ using namespace std;
 
 
 // Function to map date input by user to weather record entry column number 
-int date_data_map () {
+// date format:
+int date_data_map (int month, int day) {
 
-	int month,day, day_per_month, column;
-	std::cout << "Which date you want to investigate?"<< endl;
-	std::cout << "Month (01/02 etc.):" << endl;
-	std::cin >> month;
-	std::cout << "Your input month is " << month << endl;
-	std::cout << "Day(10/20 etc.)" << endl;
-	std::cin >> day;
-	std::cout << "Your input day is " << day << endl;
+    //int month,day;
+    int day_per_month, column;
+//	std::cout << "Which date you want to investigate?"<< endl;
+//	std::cout << "Month (01/02 etc.):" << endl;
+//	std::cin >> month;
+//	std::cout << "Your input month is " << month << endl;
+//	std::cout << "Day(10/20 etc.)" << endl;
+//	std::cin >> day;
+//	std::cout << "Your input day is " << day << endl;
 
 	// date mapping to column
 	switch (month){
@@ -46,26 +48,18 @@ int date_data_map () {
 	column = (month-1) * day_per_month + day + 4 - 1;  // plus 4 because there are 4 description columns beforehand and minus 1 due to column index starts from 0 in C++
 	std::cout << "column number is " << column << endl;
 
-	return column;
+    return column;
 }
 
 // Function to prepare vector for average [ high/low temperature / rain / snow / precipation condition]
 weather_vector_double_t condition_vector_prepare (weather_data_t weather_record, string station_id, string condition_type, int column) {
-	// condition type mapping and vector declaration
-	//switch (condition_type.c_str()) {																// C++ doesn't support switch case applied to string type 
-	//case "MT"                : weather_vector_int_t high_temp_raw; break;
-	//case "mint"              : weather_vector_int_t low_temp_raw; break;
-	//case "rain"			   : weather_vector_int_t rain_raw; break;
-	//case "snow"             : weather_vector_int_t snow_raw; break;
-	//case "precip"		   : weather_vector_int_t precip_raw; break;
-	//default : std::cout << "no match conditions! Wrong condition!" << endl;
-	//}
+
 	// declare data holding vector
 	
 	weather_vector_double_t condition_raw;
 
 	// validate input data, i.e. condition type and column number
-	if (column == -99999 || condition_type.compare("MT") != 0 || condition_type.compare("mint") != 0 || condition_type.compare("rain") != 0 || condition_type.compare("snow") != 0 || condition_type.compare("precip") != 0) {
+    if (column == -99999 || ( condition_type.compare("MT") != 0 && condition_type.compare("mint") != 0 && condition_type.compare("rain") != 0 && condition_type.compare("snow") != 0 && condition_type.compare("precip") != 0) ) {
 		double error_val = -99999.0;
 		condition_raw.push_back(error_val);
 		return condition_raw;		
@@ -79,8 +73,9 @@ weather_vector_double_t condition_vector_prepare (weather_data_t weather_record,
 					// jump to the date to be processed
 						condition_raw.push_back(atof   (  weather_record[row][column] .c_str()    ));
 	}
-	std::cout << "Prepared " << condition_type << " vector is: " << endl;
-	for (size_t i = 0; i < condition_raw.size(); i++)
-		std::cout << condition_raw[i] << " " ;
+    //std::cout << "Prepared " << condition_type << " vector is: " << endl;
+    //for (size_t i = 0; i < condition_raw.size(); i++)
+    //	std::cout << condition_raw[i] << " " ;
 	return condition_raw;
 }
+

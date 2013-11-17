@@ -10,12 +10,10 @@ using namespace std;
 
 // constructor 
 computation::computation() {
-
 }
 
 // destructor
 computation::~computation() {
-	
 }
 
 // get data from private member vector overall weather record 
@@ -73,9 +71,9 @@ bool computation::setStationDataRecord(weather_data_t record, std::string statio
 bool computation::cleanStationDataRecord(std::string station_id){
 	// erase empty lines
 	for (size_t row = 0; row < stationRecord.size(); row ++) {
-		std::cout << "station id is " << stationRecord[row][0] << endl;
+        //std::cout << "station id is " << stationRecord[row][0] << endl;
 		if (stationRecord[row][0].compare(station_id) !=0) {
-			std::cout << "ROW : " << row << " Deleteing empty line!" << endl;
+            //std::cout << "ROW : " << row << " Deleteing empty line!" << endl;
 				stationRecord.erase(stationRecord.begin() + row);
 		}
 	}
@@ -126,7 +124,7 @@ int computation::numYearOperation(weather_data_t& record){
 	// sweep
 	for (size_t row = 0; row < record.size(); row ++) {
 		
-		yr = atoi(record[row][2].c_str());			/// store year number
+        yr = atoi(record[row][2].c_str());			// store year number
 		
 		size_t column =0;
 		while (!isDataValid(        atof(      record[row][column].c_str()    )    ) ) { // valid data does not exist in a year
@@ -166,6 +164,17 @@ double computation::avgTemp(weather_vector_double_t TempArray){
 	else return avg_temp = tmp_temp / num_year_operation;
 }
 
+// store average high temperature of each day in year information
+void computation::setAvgHighTempVec(weather_vector_double_t& avg_high_temp_vec){
+    for (size_t i = 0; i < avg_high_temp_vec.size(); i++)
+        avgHighTempVec.push_back(avg_high_temp_vec[i]);
+}
+
+// get average high temperature of each day in year information
+weather_vector_double_t computation::getAvgHighTempVec(){
+    return avgHighTempVec;
+}
+
 // determine a leap year
 bool computation::isLeapYear(int year){
 	// year can be evenly divided by 4
@@ -191,7 +200,7 @@ bool computation::isLeapYear(int year){
 bool computation::isDataValid(double data){
 	// if data entry is -99999 => invalid
 	if (data == -99999) {
-		std::cout << "Invalid Data!" << endl;
+        //std::cout << "Invalid Data!" << endl;
 		return false;
 	} else {
 		//std::cout << "Valid Data, proceeding ..." << endl;

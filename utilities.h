@@ -14,21 +14,25 @@ public:
 	bool isStationIDValid(std::string);																// check if station ID is valid (in the station ID list database)
 	bool loadFile();																							// load weather data resource file
 	bool setStationList();																					// compile station ID list database
-	bool isDataComplete(weather_data_t&);													// check if data entries are complete, i.e. 370 columns each row
-	weather_data_t getRecord();																		// access private member weather data record
+    void removeIncompleteData(weather_data_t&);
+
+    // get/set weather record array
+    weather_data_t getRecord();
+    void setRecord(weather_data_t&);
 	
 	// add sort and filter unique station value method here later -- M.H
 
-	friend class computation;																			// define friend class 
+    // define friend class
+    friend class computation;
+    friend class weatherstationgui;
 
 private:
-	int test;
+    int year;
 	std::string station_ID;
-	int year;
 	std::string station_name;
 	std::string weather_condition;
 	weather_data_t record;
-	std::vector<std::string> station_list;
+    weather_vector_str_t station_list;
 };
 
 #endif

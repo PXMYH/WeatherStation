@@ -1,5 +1,12 @@
 #include "weatherstationgui.h"
+
 #include <QApplication>
+#include <QFile>
+#include <QResource>
+#include <QDebug>
+#include <QString>
+#include <QTextStream>
+
 #include "utilities.h"
 #include "computation.h"
 #include "calculation.h"
@@ -14,60 +21,78 @@ const int NUM_DATA_TOTAL = 366;
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    weatherstationgui w;
-    w.show();
+    /* *************************************************** */
+    /* weather station resource loading and initialization */
+    weather w;
 
-    cout << "Weather Station Test Pilot Program" << endl;
-    // initialization
-    weather w_test;
     // load weather data resource
-    if (!w_test.loadFile()) { std::cout << "Error Loading File!" << endl; return 0; }
-    // prompt for station ID
-    string w_id = w_test.promptStationID();
-    w_test.setStationList();
-    // check validity of input station ID
-    w_test.isStationIDValid(w_id);
-    // access the weather data record
-    weather_data_t test_array = w_test.getRecord();
-    // check if data entry is complete
-    bool res = w_test.isDataComplete(test_array);
-    std::cout << "the result is " << res << endl;
-    std::cout << "maxium size of array is " << test_array.max_size() << endl;
-    std::cout << "allocated size of array is " << test_array.capacity() << endl;
+    if (!w.loadFile()) {
+        std::cout << "Error Loading File!" << endl;
+        return 0;
+    }
 
-    // computation section
-    computation c_test;																																	// TEST: constructor
-    c_test.setDataRecord(test_array);																											// TEST: class member -> data record transfer
-    weather_data_t computation_data_record = c_test.getDataRecord();													// TEST: class member -> get private member
+    // access the weather data record
+    weather_data_t w_record_array = w.getRecord();
+
+    // remove incomplete weather record
+    w.removeIncompleteData(w_record_array);
+
+    // compile valid weather station ID list
+    w.setStationList();
+
+    // prompt user for weather station ID to investigate
+    std::string w_id = w.promptStationID();
+
+    // check validity of input station ID
+    w.isStationIDValid(w_id);
+
+
+
+
+    /* ****************************************** */
+    /* weather station key indicators computation */
+    computation c;
+
+    // transfer weather data record from class WEATHER to class COMPUTATION
+    c.setDataRecord(w_record_array);
+
+    // access private member data record
+    weather_data_t computation_data_record = c.getDataRecord();
+
     //double data_to_check = atof(computation_data_record[0][2].c_str());
     //std::cout << "the data to check is " << data_to_check << endl;
-    //c_test.isDataValid(data_to_check);																										 // TEST: class member -> if an entry is valid
-    //std::vector<int> num_valid_data = c_test.numDataValid(computation_data_record);						 // TEST: class member -> number of valid data
-    //c_test.numDataInvalid(NUM_DATA_TOTAL, num_valid_data);															 // TEST: class member -> number of invalid data
-    //c_test.isLeapYear(data_to_check);																										 // TEST: class member -> leap year determination
+    //c.isDataValid(data_to_check);																										 // TEST: class member -> if an entry is valid
+    //std::vector<int> num_valid_data = c.numDataValid(computation_data_record);						 // TEST: class member -> number of valid data
+    //c.numDataInvalid(NUM_DATA_TOTAL, num_valid_data);															 // TEST: class member -> number of invalid data
+    //c.isLeapYear(data_to_check);																										 // TEST: class member -> leap year determination
 
+    //int column = date_data_map();
+    // TEST: specific weather condition data gather and processing
+    weather_vector_double_t avg_condition;
+    for (int day = 1; day <= 366; day ++){
+        int column = day + 4 - 1;
 
-    //int column = date_data_map();																												 // TEST: specific weather condition data gather and processing
-    //weather_vector_double_t condition_array = condition_vector_prepare(computation_data_record,w_id, "mint", column);
-    //double avg_condition = c_test.avgTemp(condition_array);
-    //std::cout << "Average condition data is " << avg_condition << endl;
+        weather_vector_double_t condition_array = condition_vector_prepare(computation_data_record,w_id, "MT", column);
+        avg_condition.push_back(c.avgTemp(condition_array));
+    }
+    c.setAvgHighTempVec(avg_condition);
+    std::cout << "size is " << c.getAvgHighTempVec().size() << endl;
 
     //weather_vector_double_t max_temp_array = condition_vector_prepare(computation_data_record,w_id, "MT", column);  // TEST: find the maximum temperature of a station
-    //double highest_temp = c_test.maxTemp(max_temp_array);  // wrong array fed in; should be station data record array, test later -- M.H
+    //double highest_temp = c.maxTemp(max_temp_array);  // wrong array fed in; should be station data record array, test later -- M.H
     //std::cout << "The maximum temperature of station " << w_id << " is " << highest_temp << endl;
 
     //weather_vector_double_t min_temp_array = condition_vector_prepare(computation_data_record,w_id, "mint", column);  // TEST: find the minimum temperature of a station
-    //double lowest_temp = c_test.minTemp(min_temp_array);   // wrong array fed in; should be station data record array, test later -- M.H
+    //double lowest_temp = c.minTemp(min_temp_array);   // wrong array fed in; should be station data record array, test later -- M.H
     //std::cout << "The maximum temperature of station " << w_id << " is " << lowest_temp << endl;
 
-    if (c_test.setStationDataRecord(computation_data_record, w_id) == true )
+    if (c.setStationDataRecord(computation_data_record, w_id) == true )
         std::cout << "Station " << w_id << " weather data record compilation is finished!" << endl;
 
         ofstream myfile;
      myfile.open ("example.txt");
 
-    weather_data_t station_specific_data = c_test.getStationDataRecord();
+    weather_data_t station_specific_data = c.getStationDataRecord();
     std::cout << "size of station vector now is " << station_specific_data.size() << endl;
 
     //for (size_t row = 0; row < station_specific_data.size(); row++) {
@@ -84,12 +109,16 @@ int main(int argc, char *argv[])
 
      myfile.close();
 
-     int years_of_op = c_test.numYearOperation(station_specific_data);														// TEST: number of years of operation
+     int years_of_op = c.numYearOperation(station_specific_data);														// TEST: number of years of operation
      std::cout << "Station " << w_id << " has been operating for " << years_of_op << " years " << endl;
 
     cin.ignore();
     cin.get();
-    //return 0;
 
-    return a.exec();
+    /* ******************************** */
+    /* plot key indicators on to window */
+    QApplication weatherStation(argc, argv);
+    weatherstationgui weatherStationGUI;
+    weatherStationGUI.show();
+    return weatherStation.exec();
 }
