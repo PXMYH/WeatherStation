@@ -28,6 +28,8 @@ public:
 	
     void setAvgHighTempVec(weather_vector_double_t&);
     weather_vector_double_t getAvgHighTempVec();
+    void setAvgLowTempVec(weather_vector_double_t&);
+    weather_vector_double_t getAvgLowTempVec();
 
 
 	// get private member record						
@@ -45,6 +47,7 @@ private:
 	int lowTempDate;
 
     weather_vector_double_t avgHighTempVec;
+    weather_vector_double_t avgLowTempVec;
 
 
 	bool cleanStationDataRecord(std::string);

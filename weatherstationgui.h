@@ -5,6 +5,8 @@
 #include <QMainWindow>
 #include <QWidget>
 #include <QPoint>
+#include <QPointF>
+#include <QVector>
 #include <vector>
 
 namespace Ui {
@@ -19,21 +21,25 @@ public:
     explicit weatherstationgui(QWidget *parent = 0);
     ~weatherstationgui();
 
-    // paint method
-    void paintEvent(QPaintEvent *event);
+    void draw( QVector<QPointF>  dataIn);
+    void drawHighTemp (QVector<QPointF>  dataIn);
+    void drawLowTemp (QVector<QPointF>  dataIn);
 
-    // set/get points vector to be drawn
-    void setPoints (weather_vector_double_t&);
-    std::vector<QPoint> getPoints();
+    void setStationID(QString id);
+    void setOpYearNum(QString opYearNum);
 
-    friend class weather;
-    friend class computation;
 private:
     Ui::weatherstationgui *ui;
-    std::vector<QPoint> points_weather;
+
+    QVector<QPointF> wellData;
+    QVector<QPointF> highTempData;
+    QVector<QPointF> lowTempData;
+    QString stationID;
+    QString opYear;
 
 protected:
-
+    // paint method
+    void paintEvent(QPaintEvent *event);
 };
 
 #endif // WEATHERSTATIONGUI_H

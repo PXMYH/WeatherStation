@@ -71,7 +71,7 @@ weather_vector_double_t condition_vector_prepare (weather_data_t weather_record,
 			// check condition column
 				if (weather_record[row][3] == condition_type)
 					// jump to the date to be processed
-						condition_raw.push_back(atof   (  weather_record[row][column] .c_str()    ));
+                        condition_raw.push_back(atof   (  weather_record[row][column] .c_str()    ));
 	}
     //std::cout << "Prepared " << condition_type << " vector is: " << endl;
     //for (size_t i = 0; i < condition_raw.size(); i++)

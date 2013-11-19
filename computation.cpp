@@ -175,6 +175,18 @@ weather_vector_double_t computation::getAvgHighTempVec(){
     return avgHighTempVec;
 }
 
+// store average low temperature of each day in year information
+void computation::setAvgLowTempVec(weather_vector_double_t& avg_low_temp_vec){
+    for (size_t i = 0; i < avg_low_temp_vec.size(); i++)
+        avgLowTempVec.push_back(avg_low_temp_vec[i]);
+}
+
+// get average low temperature of each day in year information
+weather_vector_double_t computation::getAvgLowTempVec(){
+    return avgLowTempVec;
+}
+
+
 // determine a leap year
 bool computation::isLeapYear(int year){
 	// year can be evenly divided by 4

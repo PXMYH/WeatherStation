@@ -5,6 +5,8 @@
 #include <QResource>
 #include <QDebug>
 #include <QString>
+#include <QVector>
+#include <QPointF>
 #include <QTextStream>
 
 #include "utilities.h"
@@ -59,24 +61,23 @@ int main(int argc, char *argv[])
     // access private member data record
     weather_data_t computation_data_record = c.getDataRecord();
 
-    //double data_to_check = atof(computation_data_record[0][2].c_str());
-    //std::cout << "the data to check is " << data_to_check << endl;
-    //c.isDataValid(data_to_check);																										 // TEST: class member -> if an entry is valid
-    //std::vector<int> num_valid_data = c.numDataValid(computation_data_record);						 // TEST: class member -> number of valid data
-    //c.numDataInvalid(NUM_DATA_TOTAL, num_valid_data);															 // TEST: class member -> number of invalid data
-    //c.isLeapYear(data_to_check);																										 // TEST: class member -> leap year determination
+    // calculate average high / low temperature for a weather station for each day in a year
+    weather_vector_double_t avg_high_temp_vec, avg_low_temp_vec;
 
-    //int column = date_data_map();
-    // TEST: specific weather condition data gather and processing
-    weather_vector_double_t avg_condition;
     for (int day = 1; day <= 366; day ++){
+        // map day number into column number in resource file
         int column = day + 4 - 1;
 
-        weather_vector_double_t condition_array = condition_vector_prepare(computation_data_record,w_id, "MT", column);
-        avg_condition.push_back(c.avgTemp(condition_array));
+        weather_vector_double_t high_temp_array = condition_vector_prepare(computation_data_record,w_id, "MT", column);
+        avg_high_temp_vec.push_back(c.avgTemp(high_temp_array));
+
+        weather_vector_double_t high_low_array = condition_vector_prepare(computation_data_record,w_id, "mint", column);
+        avg_low_temp_vec.push_back(c.avgTemp(high_low_array));
     }
-    c.setAvgHighTempVec(avg_condition);
-    std::cout << "size is " << c.getAvgHighTempVec().size() << endl;
+
+    c.setAvgHighTempVec(avg_high_temp_vec);
+    c.setAvgLowTempVec(avg_low_temp_vec);
+
 
     //weather_vector_double_t max_temp_array = condition_vector_prepare(computation_data_record,w_id, "MT", column);  // TEST: find the maximum temperature of a station
     //double highest_temp = c.maxTemp(max_temp_array);  // wrong array fed in; should be station data record array, test later -- M.H
@@ -88,29 +89,14 @@ int main(int argc, char *argv[])
 
     if (c.setStationDataRecord(computation_data_record, w_id) == true )
         std::cout << "Station " << w_id << " weather data record compilation is finished!" << endl;
-
-        ofstream myfile;
-     myfile.open ("example.txt");
-
     weather_data_t station_specific_data = c.getStationDataRecord();
-    std::cout << "size of station vector now is " << station_specific_data.size() << endl;
 
-    //for (size_t row = 0; row < station_specific_data.size(); row++) {
-    //	//if (station_specific_data.empty() ) std::cout << "This line is empty!" << endl;
-    //	//std::cout << "Station Data => ";
-    //	myfile << "Station Data => " << endl;
-    //	for (size_t column = 0; column < station_specific_data[row].size(); column++)  {
-    //		//std::cout << station_specific_data[row][column] << " ";
-    //		myfile  << station_specific_data[row][column] << " ";
-    //	}
-    //	//std::cout << endl;
-    //	myfile << endl;
-    //}
+//    ofstream myfile;
+//    myfile.open ("example.txt");
+//    myfile.close();
 
-     myfile.close();
-
-     int years_of_op = c.numYearOperation(station_specific_data);														// TEST: number of years of operation
-     std::cout << "Station " << w_id << " has been operating for " << years_of_op << " years " << endl;
+    int years_of_op = c.numYearOperation(station_specific_data);														// TEST: number of years of operation
+    std::cout << "Station " << w_id << " has been operating for " << years_of_op << " years " << endl;
 
     cin.ignore();
     cin.get();
@@ -119,6 +105,33 @@ int main(int argc, char *argv[])
     /* plot key indicators on to window */
     QApplication weatherStation(argc, argv);
     weatherstationgui weatherStationGUI;
+
+    // set weather station ID
+    QString gui_id = QString::number( atoi(w_id.c_str()) );
+    weatherStationGUI.setStationID(gui_id);
+
+    // set number of operation years
+    QString gui_op_yr = QString::number(years_of_op);
+    weatherStationGUI.setOpYearNum(gui_op_yr);
+
+    // draw average high temperature into the main window
+    int qpoint_size_h = static_cast<int>(c.getAvgHighTempVec().size());
+    QVector<QPointF> points_high_temp(qpoint_size_h);
+    for(int i=0; i < qpoint_size_h; i++){
+       points_high_temp[i].setX(3 * i);
+       points_high_temp[i].setY(-25 * c.getAvgHighTempVec().at(i));
+     }
+    weatherStationGUI.drawHighTemp(points_high_temp);
+
+    // draw average low temperature into the main window
+    int qpoint_size_l = static_cast<int>(c.getAvgLowTempVec().size());
+    QVector<QPointF> points_low_temp(qpoint_size_l);
+    for(int i=0; i < qpoint_size_l; i++){
+       points_low_temp[i].setX(3 * i);
+       points_low_temp[i].setY(-25 * c.getAvgLowTempVec().at(i));
+     }
+    weatherStationGUI.drawLowTemp(points_low_temp);
+
     weatherStationGUI.show();
     return weatherStation.exec();
 }
