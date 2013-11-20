@@ -64,7 +64,7 @@ void weatherstationgui::paintEvent(QPaintEvent *event){
 
     // coordination transform
     int trans_axis_x = width()/20;
-    int trans_axis_y = height()*9/10;
+    int trans_axis_y = height()*7.5/10;
 
     painter.translate(trans_axis_x,trans_axis_y);
 
@@ -78,14 +78,15 @@ void weatherstationgui::paintEvent(QPaintEvent *event){
     axis_pen.setWidth(2);
     painter.setPen(axis_pen);
     painter.drawLine(0, 0, width()*8.5/10, 0);   // x axis
-    painter.drawLine(0, 0, 0, -height()*8/10);   // y axis
+    painter.drawLine(0, height()*2/10, 0, -height()*5/10);   // y axis
 
     // title
     painter.setFont(QFont("Helvetica",title_font_size));     // title pen
     QPen title_pen(Qt::black);
     title_pen.setWidth(5);
     painter.setPen(title_pen);
-    QPoint title_pos = QPoint(width()*1/10,-height()*8/10);       // title
+
+    QPoint title_pos = QPoint(width()*1/10,-height()*6/10);       // title
     QString title = "Weather Station -- ";
     title.append(stationID);
     painter.drawText(title_pos,title);
@@ -96,10 +97,10 @@ void weatherstationgui::paintEvent(QPaintEvent *event){
     legend_pen.setWidth(2);
     painter.setPen(legend_pen);
 
-    QPoint legend_high_temp_pos = QPoint(width()*5.2/10, -height()*7.5/10);      // high temperature legend
+    QPoint legend_high_temp_pos = QPoint(width()*5.2/10, -height()*5.5/10);      // high temperature legend
     painter.drawText(legend_high_temp_pos,"RED - Average High Temperature");
 
-    QPoint legend_low_temp_pos = QPoint(width()*5.2/10, -height()*7.5/10+height()/30);   // low temperature legend
+    QPoint legend_low_temp_pos = QPoint(width()*5.2/10, -height()*5.5/10+height()/30);   // low temperature legend
     painter.drawText(legend_low_temp_pos,"BLUE - Average Low Temperature");
 
     // brief
@@ -108,7 +109,7 @@ void weatherstationgui::paintEvent(QPaintEvent *event){
     brief_pen.setWidth(2);
     painter.setPen(brief_pen);
 
-    QPoint brief_pos = QPoint (width()/10, height()/20);
+    QPoint brief_pos = QPoint (width()/10, height()*4/20);
     QString brief = "This weather station has been operating for ";
     brief.append(opYear);
     brief.append(" years.");

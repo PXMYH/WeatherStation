@@ -96,10 +96,10 @@ int main(int argc, char *argv[])
 //    myfile.close();
 
     int years_of_op = c.numYearOperation(station_specific_data);														// TEST: number of years of operation
-    std::cout << "Station " << w_id << " has been operating for " << years_of_op << " years " << endl;
+//    std::cout << "Station " << w_id << " has been operating for " << years_of_op << " years " << endl;
 
-    cin.ignore();
-    cin.get();
+//    cin.ignore();
+//    cin.get();
 
     /* ******************************** */
     /* plot key indicators on to window */
@@ -114,12 +114,16 @@ int main(int argc, char *argv[])
     QString gui_op_yr = QString::number(years_of_op);
     weatherStationGUI.setOpYearNum(gui_op_yr);
 
+    // temperature curve scaling factor
+    int time_scale = 3;
+    int temp_scale = -10;
+
     // draw average high temperature into the main window
     int qpoint_size_h = static_cast<int>(c.getAvgHighTempVec().size());
     QVector<QPointF> points_high_temp(qpoint_size_h);
     for(int i=0; i < qpoint_size_h; i++){
-       points_high_temp[i].setX(3 * i);
-       points_high_temp[i].setY(-25 * c.getAvgHighTempVec().at(i));
+       points_high_temp[i].setX(time_scale * i);
+       points_high_temp[i].setY(temp_scale * c.getAvgHighTempVec().at(i));
      }
     weatherStationGUI.drawHighTemp(points_high_temp);
 
@@ -127,8 +131,8 @@ int main(int argc, char *argv[])
     int qpoint_size_l = static_cast<int>(c.getAvgLowTempVec().size());
     QVector<QPointF> points_low_temp(qpoint_size_l);
     for(int i=0; i < qpoint_size_l; i++){
-       points_low_temp[i].setX(3 * i);
-       points_low_temp[i].setY(-25 * c.getAvgLowTempVec().at(i));
+       points_low_temp[i].setX(time_scale * i);
+       points_low_temp[i].setY(temp_scale * c.getAvgLowTempVec().at(i));
      }
     weatherStationGUI.drawLowTemp(points_low_temp);
 
